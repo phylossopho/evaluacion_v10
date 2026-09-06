@@ -1,14 +1,20 @@
 // ==========================================
-// 0. DETECCIÓN DE BRAVE Y ADAPTACIÓN
+// 0. DETECCIÓN DE BRAVE Y ADAPTACIÓN (TEMPRANO)
 // ==========================================
 (function() {
-    // Detectar Brave (y otros navegadores bloqueadores)
+    // Detectar Brave lo antes posible
     const isBrave = navigator.brave ? true : false;
     const isBlocking = isBrave || navigator.userAgent.includes('Brave');
     
     if (isBlocking) {
-        console.log('🛡️ Navegador con bloqueo detectado, adaptando...');
+        console.log('🛡️ Brave detectado');
         document.documentElement.classList.add('brave-browser');
+        
+        // Mostrar el aviso (si existe en el DOM)
+        const warning = document.getElementById('braveWarning');
+        if (warning) {
+            warning.style.display = 'block';
+        }
     }
 })();
 
@@ -496,11 +502,18 @@ function handleAnswer(selectedOpt, q, btn) {
 
   const topicKey = `${q._extractedBlock}|${q._extractedTopic}`;
   if (!topicMetrics.has(topicKey)) {
-    topicMetrics.set(topicKey, { errors: 0, maxTime: 0 });
+    topicMetrics.set(topicKey, { 
+      errors: 0, 
+      maxTime: 0, 
+      totalTime: 0, 
+      count: 0 
+    });
   }
 
   const currentMetric = topicMetrics.get(topicKey);
   currentMetric.maxTime = Math.max(currentMetric.maxTime, elapsedTimeSeconds);
+  currentMetric.totalTime = (currentMetric.totalTime || 0) + elapsedTimeSeconds;
+  currentMetric.count = (currentMetric.count || 0) + 1;
 
   if (isCorrect) {
     score++;
@@ -622,27 +635,39 @@ function finishQuiz() {
 
   topicMetrics.forEach((metric, key) => {
     const [block, topic] = key.split('|');
-
-    if (metric.errors > 0) {
+    const avgTime = metric.totalTime ? metric.totalTime / metric.count : 0;
+    
+    // CRITERIOS: errores O tiempo promedio > 8 segundos
+    if (metric.errors > 0 || avgTime > 8) {
       hasTopicsToReview = true;
-      appendStudyCard(studyList, `${block} · ${topic}`, '⏰', 'Tómalo con calma, refuerza este tema');
-    }
-    else if (metric.maxTime > 10) {
-      hasTopicsToReview = true;
-      appendStudyCard(studyList, `${block} · ${topic}`, '🧠', 'Casi lo tienes dominado');
+      let reason = '';
+      if (metric.errors > 0) {
+        reason = '⏰ Revisa este tema, tuviste algunos errores';
+      } else if (avgTime > 8) {
+        reason = '🧠 Tómate tu tiempo para reflexionar, pero sigue practicando';
+      }
+      appendStudyCard(studyList, `${block} · ${topic}`, '📝', reason);
     }
   });
 
-  if (hasTopicsToReview) {
-    if (handwritingTip) handwritingTip.classList.remove('hidden');
-  } else {
+  if (!hasTopicsToReview) {
     if (handwritingTip) handwritingTip.classList.add('hidden');
     studyList.innerHTML = `
-      <div class="study-card-item">
+      <div class="study-card-item" style="border-color: #28a745;">
         <div class="study-card-title">🎉 ¡Excelente Trabajo!</div>
-        <div class="study-card-status">Has respondido correctamente todas las preguntas de forma rápida.</div>
+        <div class="study-card-status" style="color: #28a745;">
+          ✅ Has respondido correctamente. ¡Dominas el tema!
+        </div>
       </div>`;
+  } else {
+    if (handwritingTip) handwritingTip.classList.remove('hidden');
   }
+
+  console.log('📊 Estadísticas por tema:');
+  topicMetrics.forEach((metric, key) => {
+    const avg = metric.totalTime ? (metric.totalTime / metric.count).toFixed(1) : 0;
+    console.log(`  ${key}: ${metric.count} preg, ${metric.errors} errores, promedio ${avg}s`);
+  });
 
   switchView('result');
 }
