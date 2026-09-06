@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Evaluación de Aprendizaje v10</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <main class="app-container">
+    
+    <!-- Barra Superior Integrada -->
+    <header class="top-bar-integrated">
+      <button id="themeToggleBtn" class="theme-btn" type="button" aria-label="Cambiar tema">
+        <span id="themeIcon">☀️</span> <span id="themeText">Modo Claro</span>
+      </button>
+    </header>
+    
+    <!-- VISTA 1: CARGA DE ARCHIVO JSON / SELECCIÓN -->
+    <section id="startScreen" class="view-section">
+      <div class="header-subtitle">HISTORIA · 6° PRIMARIA</div>
+      <h1 class="header-title">Evaluación de aprendizaje</h1>
+      <p class="header-desc">Carga tu archivo de preguntas o selecciona la materia para comenzar.</p>
+      
+      <div id="subjectList"></div>
+
+      <div class="button-group" style="margin-top: 20px;">
+        <button id="startBtn" class="primary-btn" style="width: 100%;" disabled>Configurar temas</button>
+      </div>
+    </section>
+
+    <!-- VISTA 2: SELECCIÓN DE TEMAS Y PREGUNTAS -->
+    <section id="topicScreen" class="view-section hidden">
+      <div class="header-subtitle">CONFIGURACIÓN</div>
+      <h1 class="header-title">Selecciona los temas</h1>
+      <p class="header-desc">Elige los bloques y el número de preguntas para tu evaluación.</p>
+
+      <div class="topic-options-bar">
+        <span id="topicCount" class="topic-count-text">Selecciona al menos un tema</span>
+        <div class="question-count-group">
+          <label for="questionCount">Preguntas:</label>
+          <select id="questionCount">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="topicList"></div>
+
+      <div class="button-group" style="margin-top: 24px;">
+        <button id="backToSubject" class="secondary-btn" type="button">Volver</button>
+        <button id="topicStartBtn" class="primary-btn" type="button" disabled>Comenzar evaluación</button>
+      </div>
+    </section>
+
+    <!-- VISTA 3: CUESTIONARIO -->
+    <section id="quizScreen" class="view-section hidden">
+      <div class="progress-container">
+        <div class="progress-bar-col">
+          <div id="progressBar" class="progress-bar-fill"></div>
+        </div>
+        <div id="progressText" class="progress-text-col">0 / 0</div>
+      </div>
+
+      <div class="tags-row">
+        <span id="blockBadge" class="badge-block">Bloque</span>
+        <span id="topicBadge" class="badge-topic">Tema</span>
+      </div>
+
+      <div id="questionText" class="question-text">Cargando pregunta...</div>
+
+      <div id="answers" class="answers-grid"></div>
+    </section>
+
+    <!-- VISTA INTERMEDIA: REPOSO VISUAL -->
+    <section id="restScreen" class="view-section hidden">
+      <div class="rest-container">
+        <div class="rest-icon">👁️✨</div>
+        <h2>Pausa de reposo visual</h2>
+        <p>Aprovecha para parpadear, mirar a un punto lejano y relajar la vista.</p>
+        <div id="restTimer" class="rest-timer">10</div>
+        <button id="skipRestBtn" class="secondary-btn" type="button" style="margin-top: 15px;" disabled>Espera (10s)</button>
+      </div>
+    </section>
+
+    <!-- VISTA 4: RESULTADOS -->
+    <section id="resultScreen" class="view-section hidden">
+      <h2 id="resultHeadline" class="results-title">¡Evaluación finalizada!</h2>
+
+      <div class="results-stats-row">
+        <div class="stat-card">
+          <span class="stat-label">Tiempo Total</span>
+          <span id="totalTime" class="stat-value">00:00</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Desempeño</span>
+          <span id="medalValue" class="stat-value-badge">🌟 ¡Impresionante!</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Mejor Racha</span>
+          <span id="bestStreak" class="stat-value">🔥 0</span>
+        </div>
+      </div>
+
+      <!-- SECCIÓN DE TEMAS A REPASAR -->
+      <div class="study-section">
+        <h3>📚 Temas que puedes repasar</h3>
+        <p id="handwritingTip" class="handwriting-tip hidden">
+          ✍️ <strong>Consejo de estudio:</strong> Escribe a mano estos temas en tu libreta para tenerlos en cuenta al repasar.
+        </p>
+        <div id="studyList"></div>
+      </div>
+
+      <div class="button-group" style="margin-top: 24px; width: 100%;">
+        <button id="restartBtn" class="primary-btn" style="width: 100%;" type="button">Cargar otra evaluación</button>
+      </div>
+    </section>
+
+  </main>
+
+  <audio id="correctSound" src="correcto.mp3" preload="auto"></audio>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+:root {
+  --bg-main: #0f172a;
+  --card-bg: #1e293b;
+  --block-bg: #273549;
+  --item-bg: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #475569;
+  
+  --primary-btn: #38bdf8;
+  --secondary-btn: #475569;
+  
+  --tag-bg-block: #312e81;
+  --tag-text-block: #e0e7ff;
+  --tag-bg-topic: #14532d;
+  --tag-text-topic: #dcfce7;
+  
+  --progress-bg: #475569;
+  --progress-fill: #38bdf8;
+  
+  --fire-bg: #87BA9D;
+  --fire-border: #C89AC7;
+
+  --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] {
+  --bg-main: #F1F5F6;
+  --card-bg: #F7F2E7;
+  --block-bg: #f8fafc;
+  --item-bg: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --primary-btn: #0284c7;
+  --secondary-btn: #cbd5e1;
+  --tag-bg-block: #e0e7ff;
+  --tag-text-block: #3730a3;
+  --tag-bg-topic: #dcfce7;
+  --tag-text-topic: #166534;
+  --progress-bg: #cbd5e1;
+  --progress-fill: #0284c7;
+  --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px 15px;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 850px;
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+
+.top-bar-integrated {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.theme-btn {
+  background: var(--block-bg);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-section {
+  display: block;
+}
+
+.view-section.hidden {
+  display: none !important;
+}
+
+.header-subtitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.header-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 4px 0 6px 0;
+}
+
+.header-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.topic-options-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.question-count-group select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--block-bg);
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.block-card {
+  background: var(--block-bg);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.block-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.block-title-group h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.block-select-btn {
+  background: var(--item-bg);
+  color: var(--text-main);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.topics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.topic-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background-color: var(--item-bg);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+.primary-btn {
+  background-color: var(--primary-btn);
+  color: #0f172a;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.primary-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.secondary-btn {
+  background-color: var(--secondary-btn);
+  color: var(--text-main);
+  border: none;
+  padding: 14px 24px;
+  border-radius: 
