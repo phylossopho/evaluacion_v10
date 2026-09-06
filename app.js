@@ -1,8 +1,8 @@
 // ==========================================
-// 0. DETECCIÓN DE BRAVE Y ADAPTACIÓN (TEMPRANO)
+// 0. DETECCIÓN DE BRAVE Y CONTROL DE AVISOS
 // ==========================================
 (function() {
-    // Detectar Brave lo antes posible
+    // Detectar Brave
     const isBrave = navigator.brave ? true : false;
     const isBlocking = isBrave || navigator.userAgent.includes('Brave');
     
@@ -10,10 +10,27 @@
         console.log('🛡️ Brave detectado');
         document.documentElement.classList.add('brave-browser');
         
-        // Mostrar el aviso (si existe en el DOM)
+        // Mostrar el aviso solo si es Brave
         const warning = document.getElementById('braveWarning');
         if (warning) {
             warning.style.display = 'block';
+            
+            // Ocultar el aviso al hacer clic en cualquier parte
+            document.addEventListener('click', function ocultarAviso() {
+                const warning = document.getElementById('braveWarning');
+                if (warning) {
+                    warning.style.display = 'none';
+                }
+                document.removeEventListener('click', ocultarAviso);
+            }, { once: true });
+            
+            // También ocultar después de 10 segundos (por si el usuario no hace clic)
+            setTimeout(() => {
+                const warning = document.getElementById('braveWarning');
+                if (warning) {
+                    warning.style.display = 'none';
+                }
+            }, 10000);
         }
     }
 })();
@@ -163,8 +180,7 @@ function initFileSelector() {
   const container = document.getElementById('subjectList');
   if (!container) return;
 
-  // Detectar Brave
-  const isBrave = navigator.brave || navigator.userAgent.includes('Brave');
+  // Ya no detectamos Brave aquí para evitar duplicar avisos
   
   container.innerHTML = `
     <div style="text-align: center; margin: 15px 0;">
@@ -177,11 +193,6 @@ function initFileSelector() {
           📂 Cargar archivo de evaluación (.json)
         </button>
       </div>
-      ${isBrave ? `
-        <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9rem; border: 1px solid #ffc107;">
-          💡 Si el botón no funciona, desactiva los "Escudos" de Brave para este sitio.
-        </div>
-      ` : ''}
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
         Selecciona tu archivo JSON local.
       </p>
@@ -195,14 +206,26 @@ function initFileSelector() {
   fileInput.addEventListener('change', handleFileSelect);
   fileInput.addEventListener('input', handleFileSelect);
   
-  // Para Brave, también capturar click
+  // Cuando el input file funciona, ocultar el aviso de Brave
   fileInput.addEventListener('click', function(e) {
     console.log('Input file clickeado');
+    const warning = document.getElementById('braveWarning');
+    if (warning) {
+      warning.style.display = 'none';
+    }
   });
 
   function handleFileSelect(e) {
     const files = Array.from(this.files || []).filter(f => f.name.endsWith('.json'));
     console.log('Archivos seleccionados:', files.length);
+    
+    // Si hay archivos seleccionados, ocultar el aviso de Brave
+    if (files.length > 0) {
+      const warning = document.getElementById('braveWarning');
+      if (warning) {
+        warning.style.display = 'none';
+      }
+    }
     
     if (files.length === 0) {
       this.value = '';
