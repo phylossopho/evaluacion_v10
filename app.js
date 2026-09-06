@@ -1,21 +1,15 @@
 // ==========================================
-// 0. DIAGNÓSTICO Y COMPATIBILIDAD MÓVIL
+// 0. DETECCIÓN DE BRAVE Y ADAPTACIÓN
 // ==========================================
 (function() {
-  // Detectar si es móvil
-  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
-  
-  if (isMobile) {
-    console.log('📱 Dispositivo móvil detectado');
+    // Detectar Brave (y otros navegadores bloqueadores)
+    const isBrave = navigator.brave ? true : false;
+    const isBlocking = isBrave || navigator.userAgent.includes('Brave');
     
-    // Asegurar que los botones tengan feedback táctil
-    document.addEventListener('touchstart', function(e) {
-      const target = e.target.closest('button, .answer-btn, .topic-card');
-      if (target) {
-        target.style.transition = 'transform 0.05s';
-      }
-    }, { passive: true });
-  }
+    if (isBlocking) {
+        console.log('🛡️ Navegador con bloqueo detectado, adaptando...');
+        document.documentElement.classList.add('brave-browser');
+    }
 })();
 
 // ==========================================
@@ -140,7 +134,7 @@ function initTheme() {
 }
 
 // ==========================================
-// 5. LECTURA DE ARCHIVO JSON LOCAL (VERSIÓN MÓVIL)
+// 5. LECTURA DE ARCHIVO JSON LOCAL (VERSIÓN BRAVE)
 // ==========================================
 function helperExtractText(val) {
   if (val === null || val === undefined) return '';
@@ -163,6 +157,9 @@ function initFileSelector() {
   const container = document.getElementById('subjectList');
   if (!container) return;
 
+  // Detectar Brave
+  const isBrave = navigator.brave || navigator.userAgent.includes('Brave');
+  
   container.innerHTML = `
     <div style="text-align: center; margin: 15px 0;">
       <div style="position: relative; width: 100%; max-width: 320px; margin: 0 auto;">
@@ -174,6 +171,11 @@ function initFileSelector() {
           📂 Cargar archivo de evaluación (.json)
         </button>
       </div>
+      ${isBrave ? `
+        <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9rem; border: 1px solid #ffc107;">
+          💡 Si el botón no funciona, desactiva los "Escudos" de Brave para este sitio.
+        </div>
+      ` : ''}
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
         Selecciona tu archivo JSON local.
       </p>
@@ -183,11 +185,11 @@ function initFileSelector() {
 
   const fileInput = document.getElementById('jsonFileInput');
   
-  // Eventos para móviles y escritorio
+  // Múltiples eventos para Brave y otros navegadores
   fileInput.addEventListener('change', handleFileSelect);
   fileInput.addEventListener('input', handleFileSelect);
   
-  // Depuración
+  // Para Brave, también capturar click
   fileInput.addEventListener('click', function(e) {
     console.log('Input file clickeado');
   });
