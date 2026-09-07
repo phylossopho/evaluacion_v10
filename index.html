@@ -30,12 +30,6 @@
       <h1 class="header-title">Evaluación de aprendizaje</h1>
       <p class="header-desc">Carga tu archivo de preguntas o selecciona la materia para comenzar.</p>
       
-      <!-- Aviso para Brave (se oculta automáticamente al interactuar) -->
-      <div id="braveWarning" style="display: none; background: #fff3cd; color: #856404; padding: 12px 16px; border-radius: 8px; margin: 10px 0; border: 1px solid #ffc107; font-size: 0.95rem; text-align: center;">
-        ⚠️ <strong>Brave Browser detectado:</strong> Para cargar archivos, desactiva los <strong>"Escudos"</strong> (clic en el ícono del león 🦁 en la barra de direcciones).
-        <br><small style="display: block; margin-top: 6px;">💡 Este aviso desaparecerá automáticamente cuando el botón funcione.</small>
-      </div>
-      
       <div id="subjectList"></div>
 
       <div class="button-group" style="margin-top: 20px;">
@@ -120,8 +114,9 @@
           <span id="medalValue" class="stat-value-badge">🌟 ¡Impresionante!</span>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Mejor Racha</span>
-          <span id="bestStreak" class="stat-value">🔥 0</span>
+          <!-- Cambio: "Mejor Racha" → "Aciertos" -->
+          <span class="stat-label">Aciertos</span>
+          <span id="scoreDisplay" class="stat-value">0</span>
         </div>
       </div>
 
