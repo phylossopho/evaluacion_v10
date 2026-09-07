@@ -1,37 +1,14 @@
 // ==========================================
-// 0. DETECCIÓN DE BRAVE Y CONTROL DE AVISOS
+// 0. DETECCIÓN DE BRAVE Y ADAPTACIÓN
 // ==========================================
 (function() {
-    // Detectar Brave
+    // Detectar Brave (y otros navegadores bloqueadores)
     const isBrave = navigator.brave ? true : false;
     const isBlocking = isBrave || navigator.userAgent.includes('Brave');
     
     if (isBlocking) {
-        console.log('🛡️ Brave detectado');
+        console.log('🛡️ Navegador con bloqueo detectado, adaptando...');
         document.documentElement.classList.add('brave-browser');
-        
-        // Mostrar el aviso solo si es Brave
-        const warning = document.getElementById('braveWarning');
-        if (warning) {
-            warning.style.display = 'block';
-            
-            // Ocultar el aviso al hacer clic en cualquier parte
-            document.addEventListener('click', function ocultarAviso() {
-                const warning = document.getElementById('braveWarning');
-                if (warning) {
-                    warning.style.display = 'none';
-                }
-                document.removeEventListener('click', ocultarAviso);
-            }, { once: true });
-            
-            // También ocultar después de 10 segundos (por si el usuario no hace clic)
-            setTimeout(() => {
-                const warning = document.getElementById('braveWarning');
-                if (warning) {
-                    warning.style.display = 'none';
-                }
-            }, 10000);
-        }
     }
 })();
 
@@ -180,7 +157,8 @@ function initFileSelector() {
   const container = document.getElementById('subjectList');
   if (!container) return;
 
-  // Ya no detectamos Brave aquí para evitar duplicar avisos
+  // Detectar Brave
+  const isBrave = navigator.brave || navigator.userAgent.includes('Brave');
   
   container.innerHTML = `
     <div style="text-align: center; margin: 15px 0;">
@@ -193,6 +171,11 @@ function initFileSelector() {
           📂 Cargar archivo de evaluación (.json)
         </button>
       </div>
+      ${isBrave ? `
+        <div style="background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.9rem; border: 1px solid #ffc107;">
+          💡 Si el botón no funciona, desactiva los "Escudos" de Brave para este sitio.
+        </div>
+      ` : ''}
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
         Selecciona tu archivo JSON local.
       </p>
@@ -206,26 +189,14 @@ function initFileSelector() {
   fileInput.addEventListener('change', handleFileSelect);
   fileInput.addEventListener('input', handleFileSelect);
   
-  // Cuando el input file funciona, ocultar el aviso de Brave
+  // Para Brave, también capturar click
   fileInput.addEventListener('click', function(e) {
     console.log('Input file clickeado');
-    const warning = document.getElementById('braveWarning');
-    if (warning) {
-      warning.style.display = 'none';
-    }
   });
 
   function handleFileSelect(e) {
     const files = Array.from(this.files || []).filter(f => f.name.endsWith('.json'));
     console.log('Archivos seleccionados:', files.length);
-    
-    // Si hay archivos seleccionados, ocultar el aviso de Brave
-    if (files.length > 0) {
-      const warning = document.getElementById('braveWarning');
-      if (warning) {
-        warning.style.display = 'none';
-      }
-    }
     
     if (files.length === 0) {
       this.value = '';
@@ -525,18 +496,11 @@ function handleAnswer(selectedOpt, q, btn) {
 
   const topicKey = `${q._extractedBlock}|${q._extractedTopic}`;
   if (!topicMetrics.has(topicKey)) {
-    topicMetrics.set(topicKey, { 
-      errors: 0, 
-      maxTime: 0, 
-      totalTime: 0, 
-      count: 0 
-    });
+    topicMetrics.set(topicKey, { errors: 0, maxTime: 0 });
   }
 
   const currentMetric = topicMetrics.get(topicKey);
   currentMetric.maxTime = Math.max(currentMetric.maxTime, elapsedTimeSeconds);
-  currentMetric.totalTime = (currentMetric.totalTime || 0) + elapsedTimeSeconds;
-  currentMetric.count = (currentMetric.count || 0) + 1;
 
   if (isCorrect) {
     score++;
@@ -642,7 +606,8 @@ function finishQuiz() {
   const s = (totalTimeSeconds % 60).toString().padStart(2, '0');
   document.getElementById('totalTime').textContent = `${m}:${s}`;
 
-  document.getElementById('bestStreak').textContent = `🔥 ${bestStreak}`;
+  // Cambio: mostrar el total de aciertos (score) en lugar de la mejor racha
+  document.getElementById('scoreDisplay').textContent = `${score}`;
 
   const percentage = (score / quizQuestions.length) * 100;
   let motivationalBadge = '💪 ¡Sigue practicando!';
@@ -658,39 +623,27 @@ function finishQuiz() {
 
   topicMetrics.forEach((metric, key) => {
     const [block, topic] = key.split('|');
-    const avgTime = metric.totalTime ? metric.totalTime / metric.count : 0;
-    
-    // CRITERIOS: errores O tiempo promedio > 8 segundos
-    if (metric.errors > 0 || avgTime > 8) {
+
+    if (metric.errors > 0) {
       hasTopicsToReview = true;
-      let reason = '';
-      if (metric.errors > 0) {
-        reason = '⏰ Revisa este tema, tuviste algunos errores';
-      } else if (avgTime > 8) {
-        reason = '🧠 Tómate tu tiempo para reflexionar, pero sigue practicando';
-      }
-      appendStudyCard(studyList, `${block} · ${topic}`, '📝', reason);
+      appendStudyCard(studyList, `${block} · ${topic}`, '⏰', 'Tómalo con calma, refuerza este tema');
+    }
+    else if (metric.maxTime > 10) {
+      hasTopicsToReview = true;
+      appendStudyCard(studyList, `${block} · ${topic}`, '🧠', 'Casi lo tienes dominado');
     }
   });
 
-  if (!hasTopicsToReview) {
+  if (hasTopicsToReview) {
+    if (handwritingTip) handwritingTip.classList.remove('hidden');
+  } else {
     if (handwritingTip) handwritingTip.classList.add('hidden');
     studyList.innerHTML = `
-      <div class="study-card-item" style="border-color: #28a745;">
+      <div class="study-card-item">
         <div class="study-card-title">🎉 ¡Excelente Trabajo!</div>
-        <div class="study-card-status" style="color: #28a745;">
-          ✅ Has respondido correctamente. ¡Dominas el tema!
-        </div>
+        <div class="study-card-status">Has respondido correctamente todas las preguntas de forma rápida.</div>
       </div>`;
-  } else {
-    if (handwritingTip) handwritingTip.classList.remove('hidden');
   }
-
-  console.log('📊 Estadísticas por tema:');
-  topicMetrics.forEach((metric, key) => {
-    const avg = metric.totalTime ? (metric.totalTime / metric.count).toFixed(1) : 0;
-    console.log(`  ${key}: ${metric.count} preg, ${metric.errors} errores, promedio ${avg}s`);
-  });
 
   switchView('result');
 }
