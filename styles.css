@@ -480,27 +480,6 @@ body {
 /* ==========================================
    ESTILOS ESPECÍFICOS PARA BRAVE
    ========================================== */
-/* Mostrar aviso solo en Brave */
-.brave-browser #braveWarning {
-  display: block !important;
-}
-
-/* Animación suave para el aviso */
-#braveWarning {
-  animation: fadeInWarning 0.3s ease;
-}
-
-@keyframes fadeInWarning {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .brave-browser [data-theme="light"] .block-card {
   background-color: #f8fafc !important;
   border-color: #cbd5e1 !important;
